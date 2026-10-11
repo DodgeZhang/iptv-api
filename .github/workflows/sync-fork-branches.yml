@@ -8,8 +8,28 @@ jobs:
   sync-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync master from upstream Guovin/iptv-api
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/Guovin/iptv-api.git
+          git fetch upstream
+
+      - name: Merge upstream master
+        run: |
+          git merge upstream/master --no-ff
+
+      - name: Push back to origin
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh repo sync DodgeZhang/iptv-api --source Guovin/iptv-api --branch master
+          git push origin master
