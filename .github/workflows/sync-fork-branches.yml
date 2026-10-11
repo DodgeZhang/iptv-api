@@ -29,12 +29,12 @@ jobs:
           git remote add upstream https://github.com/Guovin/iptv-api.git
           git fetch upstream --no-tags
 
-      - name: Merge upstream and keep local workflows
+      - name: Merge upstream (keep local workflows)
         run: |
           # 合并上游代码，先不提交
           git merge upstream/master --no-edit --allow-unrelated-histories --no-commit
-          # 恢复本地 workflows 目录，丢弃上游的 workflow 文件改动
-          git checkout HEAD -- .github/workflows/
+          # 强制把 .github/workflows 目录重置为合并前的本地版本，完全丢弃上游所有改动
+          git read-tree HEAD -- .github/workflows/
           # 提交合并结果
           git commit --no-edit
 
