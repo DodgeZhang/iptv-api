@@ -1,4 +1,9 @@
 name: Sync Fork Master
+
+permissions:
+  contents: write
+  workflows: write
+
 on:
   schedule:
     - cron: '*/10 * * * *'
@@ -13,7 +18,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: master
-          persist-credentials: false
 
       - name: Setup Git identity
         run: |
@@ -22,14 +26,12 @@ jobs:
 
       - name: Fetch upstream
         run: |
-          # 先删除旧的upstream，避免重复添加报错
           git remote remove upstream 2>/dev/null || true
           git remote add upstream https://github.com/Guovin/iptv-api.git
           git fetch upstream --no-tags
 
       - name: Merge upstream master
         run: |
-          # 非快进合并，保留本地workflow文件
           git merge upstream/master --no-edit --allow-unrelated-histories
 
       - name: Push to origin
