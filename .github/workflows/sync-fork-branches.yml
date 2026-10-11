@@ -2,7 +2,6 @@ name: Sync Fork Master
 
 permissions:
   contents: write
-  workflows: write
 
 on:
   schedule:
@@ -30,9 +29,14 @@ jobs:
           git remote add upstream https://github.com/Guovin/iptv-api.git
           git fetch upstream --no-tags
 
-      - name: Merge upstream master
+      - name: Merge upstream and keep local workflows
         run: |
-          git merge upstream/master --no-edit --allow-unrelated-histories
+          # 合并上游代码，先不提交
+          git merge upstream/master --no-edit --allow-unrelated-histories --no-commit
+          # 恢复本地 workflows 目录，丢弃上游的 workflow 文件改动
+          git checkout HEAD -- .github/workflows/
+          # 提交合并结果
+          git commit --no-edit
 
       - name: Push to origin
         env:
