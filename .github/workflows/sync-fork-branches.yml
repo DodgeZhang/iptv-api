@@ -1,0 +1,15 @@
+name: Sync Fork Main
+on:
+  schedule:
+    - cron: '*/10 * * * *' # 每10分钟同步一次上游
+  workflow_dispatch: # 支持网页手动触发
+
+jobs:
+  sync-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync main branch from upstream Guovin/iptv-api
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh repo sync DodgeZhang/iptv-api --source Guovin/iptv-api --branch main
