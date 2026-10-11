@@ -13,23 +13,27 @@ jobs:
         with:
           fetch-depth: 0
           ref: master
+          persist-credentials: false
 
-      - name: Setup Git
+      - name: Setup Git identity
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add upstream remote
+      - name: Fetch upstream
         run: |
+          # 先删除旧的upstream，避免重复添加报错
+          git remote remove upstream 2>/dev/null || true
           git remote add upstream https://github.com/Guovin/iptv-api.git
-          git fetch upstream
+          git fetch upstream --no-tags
 
       - name: Merge upstream master
         run: |
-          git merge upstream/master --no-ff
+          # 非快进合并，保留本地workflow文件
+          git merge upstream/master --no-edit --allow-unrelated-histories
 
-      - name: Push back to origin
+      - name: Push to origin
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git push origin master
+          git push https://x-access-token:${GH_TOKEN}@github.com/DodgeZhang/iptv-api.git master
